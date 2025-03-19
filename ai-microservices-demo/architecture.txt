@@ -1,0 +1,29 @@
++------------------+    +----------------+
+|                  |    |                |
+|  Frontend        |<-->|  API Gateway   |
+|  (React)         |    |  (Node.js)     |
+|                  |    |                |
++------------------+    +----------------+
+                             ^
+                             |
+          +------------------+-----------------------+
+          |                  |                       |
+          v                  v                       v
++------------------+ +------------------+ +------------------+ +------------------+
+|                  | |                  | |                  | |                  |
+|  Notes Service   | |  AI Service      | |  User Service    | |  OpenAI Service  |
+|  (Node.js)       | |  (Python)        | |  (Node.js)       | |  (Node.js)       |
+|                  | |                  | |                  | |                  |
++------------------+ +------------------+ +------------------+ +------------------+
+         ^                   ^
+         |                   |
+         v                   |
++------------------+         |
+|                  |         |
+|  Database        |---------+
+|  (MongoDB)       |
+|                  |
++------------------+
+
+Note: This is a text-based representation. For the actual workshop, 
+convert this to a proper diagram using a tool like draw.io or Lucidchart. 

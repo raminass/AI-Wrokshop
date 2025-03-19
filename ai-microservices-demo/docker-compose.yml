@@ -1,0 +1,95 @@
+version: '3'
+
+services:
+  # Frontend Service
+  frontend:
+    build: ./frontend-service
+    ports:
+      - "8080:8000"
+    depends_on:
+      - api-gateway
+    networks:
+      - app-network
+    volumes:
+      - ./frontend-service:/app
+      - /app/node_modules
+
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - notes-service
+      - ai-service
+      - openai-service
+    networks:
+      - app-network
+    environment:
+      - NOTES_SERVICE_URL=http://notes-service:8001
+      - AI_SERVICE_URL=http://ai-service:8002
+      - OPENAI_SERVICE_URL=http://openai-service:8004
+
+  # Notes Service
+  notes-service:
+    build: ./notes-service
+    ports:
+      - "8001:8001"
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/notes
+      - AI_SERVICE_URL=http://ai-service:8002
+
+  # AI Service
+  ai-service:
+    build: ./ai-service
+    ports:
+      - "8002:8002"
+    networks:
+      - app-network
+    environment:
+      - USE_HUGGINGFACE=false  # Set to true to use HuggingFace instead of NLTK
+
+  # OpenAI Service
+  openai-service:
+    build: ./openai-service
+    ports:
+      - "8004:8004"
+    networks:
+      - app-network
+    environment:
+      - PORT=8004
+    env_file:
+      - ./openai-service/.env
+
+  # User Service
+  user-service:
+    build: ./user-service
+    ports:
+      - "8003:8003"
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/users
+
+  # MongoDB
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data: 
